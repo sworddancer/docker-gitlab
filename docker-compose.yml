@@ -59,7 +59,7 @@ services:
     - GITLAB_HTTPS=false
     - SSL_SELF_SIGNED=false
 
-    - GITLAB_HOST=localhost
+    - GITLAB_HOST=172.21.67.143
     - GITLAB_PORT=30180
     - GITLAB_SSH_PORT=30122
     - GITLAB_RELATIVE_URL_ROOT=
