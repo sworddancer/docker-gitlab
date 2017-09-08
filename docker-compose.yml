@@ -4,16 +4,22 @@ services:
   redis:
     restart: always
     image: sameersbn/redis:latest
+    container_name: gitlab_redis
+    networks:
+      - gitlabnet
     command:
     - --loglevel warning
     volumes:
-    - /var/docker/gitlab/redis:/var/lib/redis:Z
+    - gitlabredis/redis:/var/lib/redis:Z
 
   postgresql:
     restart: always
     image: sameersbn/postgresql:9.6-2
+    container_name: gitlab_postgresql
+    networks:
+      - gitlabnet
     volumes:
-    - /var/docker/gitlab/postgresql:/var/lib/postgresql:Z
+    - gitlabpostgresql:/var/lib/postgresql:Z
     environment:
     - DB_USER=gitlab
     - DB_PASS=password
@@ -23,6 +29,9 @@ services:
   gitlab:
     restart: always
     image: sameersbn/gitlab:9.5.3
+    container_name: gitlab_gitlab
+    networks:
+      - gitlabnet
     depends_on:
     - redis
     - postgresql
@@ -30,7 +39,7 @@ services:
     - "30180:80"
     - "30122:22"
     volumes:
-    - /var/docker/gitlab/gitlab:/home/git/data:Z
+    - gitlabgitlab:/home/git/data:Z
     environment:
     - DEBUG=false
 
@@ -137,9 +146,9 @@ services:
     - OAUTH_SAML_ATTRIBUTE_STATEMENTS_FIRST_NAME=
     - OAUTH_SAML_ATTRIBUTE_STATEMENTS_LAST_NAME=
 
-    - OAUTH_CROWD_SERVER_URL=
-    - OAUTH_CROWD_APP_NAME=
-    - OAUTH_CROWD_APP_PASSWORD=
+    - OAUTH_CROWD_SERVER_URL=http://172.21.67.143:20095/crowd
+    - OAUTH_CROWD_APP_NAME=gitlab
+    - OAUTH_CROWD_APP_PASSWORD=gitlab
 
     - OAUTH_AUTH0_CLIENT_ID=
     - OAUTH_AUTH0_CLIENT_SECRET=
@@ -148,3 +157,14 @@ services:
     - OAUTH_AZURE_API_KEY=
     - OAUTH_AZURE_API_SECRET=
     - OAUTH_AZURE_TENANT_ID=
+volumes:
+  gitlabredis:
+    external: false
+  gitlabpostgresql:
+    external: false
+  gitlabgitlab:
+    external: false
+
+networks:
+  gitlabnet:
+    driver: bridge
