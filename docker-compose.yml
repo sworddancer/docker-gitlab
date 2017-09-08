@@ -10,7 +10,7 @@ services:
     command:
     - --loglevel warning
     volumes:
-    - gitlabredis/redis:/var/lib/redis:Z
+    - gitlabredis:/var/lib/redis:Z
 
   postgresql:
     restart: always
